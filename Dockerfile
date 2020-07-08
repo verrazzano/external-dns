@@ -1,5 +1,5 @@
 # builder image
-FROM oraclelinux:7.8 as builder
+FROM container-registry.oracle.com/os/oraclelinux:7.8 as builder
 
 ARG VERSION
 
@@ -27,7 +27,7 @@ RUN go mod vendor && \
     make build
 
 # final image
-FROM oraclelinux:7-slim
+FROM container-registry.oracle.com/os/oraclelinux:7-slim
 
 COPY --from=builder /sigs.k8s.io/external-dns/build/external-dns /bin/external-dns
 
