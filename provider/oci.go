@@ -201,8 +201,8 @@ func (p *OCIProvider) Records(ctx context.Context) ([]*endpoint.Endpoint, error)
 
 // ApplyChanges applies a given set of changes to a given zone.
 func (p *OCIProvider) ApplyChanges(ctx context.Context, changes *plan.Changes) error {
-	log.Debugf("Processing chages: %+v", changes)
-
+	log.Debugf("Processing changes: %+v", changes)
+	log.Debugf("Context passed in: %+v", ctx)
 	ops := []dns.RecordOperation{}
 	ops = append(ops, p.newFilteredRecordOperations(changes.Create, dns.RecordOperationOperationAdd)...)
 
@@ -218,6 +218,7 @@ func (p *OCIProvider) ApplyChanges(ctx context.Context, changes *plan.Changes) e
 
 	zones, err := p.zones(ctx)
 	if err != nil {
+		log.Infof("Error Fetching Zones %+v", err)
 		return errors.Wrap(err, "fetching zones")
 	}
 
@@ -231,6 +232,7 @@ func (p *OCIProvider) ApplyChanges(ctx context.Context, changes *plan.Changes) e
 	}
 
 	if p.dryRun {
+		log.Info("In P.DryRun")
 		return nil
 	}
 
@@ -240,6 +242,7 @@ func (p *OCIProvider) ApplyChanges(ctx context.Context, changes *plan.Changes) e
 			ZoneNameOrId:            &zoneID,
 			PatchZoneRecordsDetails: dns.PatchZoneRecordsDetails{Items: ops},
 		}); err != nil {
+			log.Infof("Error In  OpsByZone: %+v", err)
 			return err
 		}
 	}
